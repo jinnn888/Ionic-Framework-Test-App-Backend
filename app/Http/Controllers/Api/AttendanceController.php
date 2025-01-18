@@ -20,6 +20,26 @@ class AttendanceController extends Controller
         ]);
     }
 
+    public function getPresentsToday()
+    {
+        $attendances = Attendance::where('day', Carbon::today())->get();
+
+        return response()->json([
+            'attendances' => $attendances
+        ]);
+
+    }
+
+    public function filterAttendances(Request $request)
+    {
+        $date = Carbon::parse($request->date)->format('Y-m-d');
+        $attendances = Attendance::where('day', $date)->get();
+        
+        return response()->json([
+            'attendances' => $attendances
+        ]);
+    }
+
     /**
      * Show the form for creating a new resource.
      */
@@ -47,30 +67,6 @@ class AttendanceController extends Controller
             'data' => $request->student,
             'message' => 'Attendance recorded.'
         ]);
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
     }
 
     /**
