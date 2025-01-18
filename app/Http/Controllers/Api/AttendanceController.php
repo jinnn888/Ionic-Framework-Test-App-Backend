@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use App\Models\Attendance;
+use App\Models\Student;
+use App\Http\Resources\AttendanceResource;
 
 class AttendanceController extends Controller
 {
@@ -14,18 +16,16 @@ class AttendanceController extends Controller
      */
     public function index()
     {
-        $attendances = Attendance::all();
-        return response()->json([
-            'attendances' => $attendances
-        ]);
+        $attendances = Attendance::with('student')->get();
+        return AttendanceResource::collection($attendances);
     }
 
     public function getPresentsToday()
     {
-        $attendances = Attendance::where('day', Carbon::today())->get();
+        $attendances = Attendance::with('student')->where('day', Carbon::today())->get();
 
         return response()->json([
-            'attendances' => $attendances
+            'attendances' => AttendanceResource::collection($attendances)
         ]);
 
     }
@@ -33,32 +33,22 @@ class AttendanceController extends Controller
     public function filterAttendances(Request $request)
     {
         $date = Carbon::parse($request->date)->format('Y-m-d');
-        $attendances = Attendance::where('day', $date)->get();
-        
+        $attendances = Attendance::with('student')->where('day', $date)->get();
         return response()->json([
-            'attendances' => $attendances
+            'attendances' => AttendanceResource::collection($attendances)
         ]);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(Request $request)
     {
 
         $today = Carbon::today();
         $currentTime = Carbon::now();
 
+        $student = Student::where('id_number', $request->id_number)->first();
+
         Attendance::create([
-            'student' => $request->student,
+            'student_id' => $student->id,
             'day' => $today,
             'time_in' => $currentTime
         ]);

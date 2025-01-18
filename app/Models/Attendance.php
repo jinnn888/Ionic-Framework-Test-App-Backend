@@ -12,4 +12,8 @@ class Attendance extends Model
         return \Carbon\Carbon::parse($value)->format('H:i A');
     }
 
+    public function student() {
+        return $this->belongsTo(Student::class);
+    }
+
 }
