@@ -31,6 +31,17 @@ class AttendanceController extends Controller
 
     }
 
+    public function getAbsenteesToday()
+    {
+        $absentStudents = Student::whereDoesntHave('attendances', function ($query) {
+            $query->whereDate('day', Carbon::today());
+        })->get();
+
+        return response()->json([
+            'absentees' => $absentStudents
+        ]);
+    }
+
     public function filterAttendances(Request $request)
     {
         $date = Carbon::parse($request->date)->format('Y-m-d');
@@ -52,7 +63,7 @@ class AttendanceController extends Controller
                 'error' => 'Student not found.'
             ], 422);
         }
- 
+        
 
         $today = Carbon::today();
         $currentTime = Carbon::now();

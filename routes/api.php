@@ -17,6 +17,7 @@ Route::post('/logout', [AuthController::class, 'logout'])->middleware('auth:sanc
 Route::post('/attendance', [AttendanceController::class, 'store']);
 Route::get('/attendance', [AttendanceController::class, 'index']);
 Route::get('/presents-today', [AttendanceController::class, 'getPresentsToday']);
+Route::get('/absents-today', [AttendanceController::class, 'getAbsenteesToday']);
 Route::post('/date-filter', [AttendanceController::class, 'filterAttendances']);
 
 
