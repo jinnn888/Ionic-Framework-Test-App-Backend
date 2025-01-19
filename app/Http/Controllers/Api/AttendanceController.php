@@ -8,6 +8,7 @@ use Carbon\Carbon;
 use App\Models\Attendance;
 use App\Models\Student;
 use App\Http\Resources\AttendanceResource;
+use Illuminate\Support\Facades\Validator;
 
 class AttendanceController extends Controller
 {
@@ -41,6 +42,17 @@ class AttendanceController extends Controller
 
     public function store(Request $request)
     {
+        $validator = Validator::make($request->all(), [
+            'id_number' => 'required|exists:students,id_number'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'message' => 'Error',
+                'error' => 'Student not found.'
+            ], 422);
+        }
+ 
 
         $today = Carbon::today();
         $currentTime = Carbon::now();

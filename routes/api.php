@@ -21,3 +21,6 @@ Route::post('/date-filter', [AttendanceController::class, 'filterAttendances']);
 
 
 Route::post('/student', [StudentController::class, 'store']);
+Route::get('/student', [StudentController::class, 'index']);
+Route::get('/student/edit/{id}', [StudentController::class, 'edit']);
+Route::put('/student/update/{id}', [StudentController::class, 'update']);
