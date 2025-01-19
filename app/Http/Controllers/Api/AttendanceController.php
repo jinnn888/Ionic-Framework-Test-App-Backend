@@ -8,6 +8,7 @@ use Carbon\Carbon;
 use App\Models\Attendance;
 use App\Models\Student;
 use App\Http\Resources\AttendanceResource;
+use App\Http\Resources\StudentResource;
 use Illuminate\Support\Facades\Validator;
 
 class AttendanceController extends Controller
@@ -42,12 +43,23 @@ class AttendanceController extends Controller
         ]);
     }
 
-    public function filterAttendances(Request $request)
+    public function filterPresentAttendances(Request $request)
     {
         $date = Carbon::parse($request->date)->format('Y-m-d');
-        $attendances = Attendance::with('student')->where('day', $date)->get();
+        $attendances = Attendance::with('student')->whereDate('day', $date)->get();
         return response()->json([
             'attendances' => AttendanceResource::collection($attendances)
+        ]);
+    }
+
+    public function filterAbsentAttendances(Request $request)
+    {
+        $date = Carbon::parse($request->date)->format('Y-m-d');
+        $absentStudents = Student::whereDoesntHave('attendances', function($query) use ($date) {
+            $query->whereDate('day', $date);
+        })->get();
+        return response()->json([
+            'attendances' => StudentResource::collection($absentStudents)
         ]);
     }
 
@@ -63,7 +75,7 @@ class AttendanceController extends Controller
                 'error' => 'Student not found.'
             ], 422);
         }
-        
+
 
         $today = Carbon::today();
         $currentTime = Carbon::now();
